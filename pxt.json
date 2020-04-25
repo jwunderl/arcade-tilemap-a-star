@@ -9,7 +9,8 @@
     "files": [
         "README.md",
         "main.ts",
-        "a-star.ts"
+        "a-star.ts",
+        "path-following.ts"
     ],
     "testFiles": [
         "test.ts"
