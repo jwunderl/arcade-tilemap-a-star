@@ -110,7 +110,7 @@ namespace tiles {
         const output = [];
 
         while (curr) {
-            output.push(curr.l);
+            output.unshift(curr.l);
             curr = curr.parent;
         }
 
