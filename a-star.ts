@@ -23,6 +23,11 @@ namespace tiles {
     }
 
     function aStar(start: tiles.Location, end: tiles.Location) {
+        const tileMapData = (game.currentScene().tileMap as any)._map;
+        if (isWall(start, tileMapData) || isWall(end, tileMapData)) {
+            return undefined;
+        }
+
         const consideredTiles = new Heap<PrioritizedLocation>(
             (a, b) => (a.cost + a.extraCost) - (b.cost + b.extraCost)
         );
@@ -80,7 +85,7 @@ namespace tiles {
 
             const nextCost = currLocation.cost + 1;
 
-            for (const node of neighbors) {
+            for (const node of neighbors.filter(l => isWall(l, tileMapData))) {
                 updateOrFillLocation(node, dataForCurrLocation, nextCost);
             }
         }
@@ -125,5 +130,11 @@ namespace tiles {
 
     function locationCol(tiles: tiles.Location): number {
         return (tiles as any)._col;
+    }
+
+    function isWall(l: tiles.Location, data: tiles.TileMapData) {
+        const r = locationRow(l);
+        const c = locationCol(l);
+        return data.isWall(c, r);
     }
 }
