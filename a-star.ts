@@ -64,13 +64,16 @@ namespace tiles {
 
         while (consideredTiles.length !== 0) {
             const currLocation = consideredTiles.pop();
+
+            if (currLocation.loc.x === end.x && currLocation.loc.y === end.y) {
+                break;
+            }
+            
             const row = locationRow(currLocation.loc);
             const col = locationRow(currLocation.loc);
             const dataForCurrLocation = encountedLocations[row][col];
 
-            if (currLocation.loc.x === end.x && currLocation.loc.y === end.y) {
-                break;
-            } else if (dataForCurrLocation && dataForCurrLocation.visited) {
+            if (dataForCurrLocation && dataForCurrLocation.visited) {
                 continue;
             }
 
