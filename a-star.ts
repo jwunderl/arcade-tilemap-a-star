@@ -1,5 +1,3 @@
-
-
 namespace tiles {
     class PrioritizedLocation {
         constructor(
