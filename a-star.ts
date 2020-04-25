@@ -26,10 +26,8 @@ namespace scene {
     //% group="Tiles" weight=10
     export function aStar(start: tiles.Location, end: tiles.Location) {
         const tm = game.currentScene().tileMap;
-        // we should either expose this or the fns in this; I'm guessing pxt-tilemaps already does?
-        const tileMapData = (tm as any)._map;
 
-        if (isWall(start, tileMapData) || isWall(end, tileMapData)) {
+        if (isWall(start, tm) || isWall(end, tm)) {
             return undefined;
         }
 
@@ -42,9 +40,10 @@ namespace scene {
             const row = locationRow(l);
             const col = locationCol(l);
 
-            if (tileMapData.isOutsideMap(col, row)) {
+            if (tm.isObstacle(col, row)) {
                 return;
             }
+
             const colData = (encountedLocations[col] || (encountedLocations[col] = []));
             const lData = colData[row];
 
@@ -97,7 +96,7 @@ namespace scene {
             ];
 
             const nextCost = currLocation.cost + 1;
-            for (const node of neighbors.filter(l => !isWall(l, tileMapData))) {
+            for (const node of neighbors.filter(l => !isWall(l, tm))) {
                 updateOrFillLocation(node, dataForCurrLocation, nextCost);
             }
         }
@@ -144,9 +143,9 @@ namespace scene {
         return l.x >> 4;
     }
 
-    function isWall(l: tiles.Location, data: tiles.TileMapData) {
+    function isWall(l: tiles.Location, tm: tiles.TileMap) {
         const r = locationRow(l);
         const c = locationCol(l);
-        return data.isWall(c, r);
+        return tm.isObstacle(c, r);
     }
 }
