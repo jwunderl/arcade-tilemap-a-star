@@ -1,4 +1,4 @@
-namespace tiles {
+namespace scene {
     class PrioritizedLocation {
         constructor(
             public loc: tiles.Location,
@@ -20,6 +20,10 @@ namespace tiles {
         }
     }
 
+    //% block="path from $start to $end"
+    //% start.shadow=mapgettile
+    //% end.shadow=mapgettile
+    //% group="Tiles" weight=10
     export function aStar(start: tiles.Location, end: tiles.Location) {
         const tm = game.currentScene().tileMap;
         // we should either expose this or the fns in this; I'm guessing pxt-tilemaps already does?

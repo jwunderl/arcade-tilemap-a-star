@@ -38,7 +38,7 @@ tiles.setTilemap(tiles.createTilemap(
 
 
 controller.A.onEvent(ControllerButtonEvent.Pressed, () => {
-    const res = tiles.aStar(tiles.getTileLocation(0, 0), tiles.getTileLocation(9, 0));
+    const res = scene.aStar(tiles.getTileLocation(0, 0), tiles.getTileLocation(9, 0));
     for (const l of (res || [])) {
         tiles.setTileAt(l, sprites.castle.tilePath4)
         pause(100)
