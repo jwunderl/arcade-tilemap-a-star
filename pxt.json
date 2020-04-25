@@ -4,7 +4,7 @@
     "description": "",
     "dependencies": {
         "device": "*",
-        "pxt-heap": "github:jwunderl/pxt-heap#v0.0.1"
+        "pxt-heap": "github:jwunderl/pxt-heap#v0.0.3"
     },
     "files": [
         "README.md",

@@ -22,8 +22,10 @@ namespace tiles {
         }
     }
 
-    function aStar(start: tiles.Location, end: tiles.Location) {
-        const tileMapData = (game.currentScene().tileMap as any)._map;
+    export function aStar(start: tiles.Location, end: tiles.Location) {
+        const tm = game.currentScene().tileMap;
+        const tileMapData = (tm as any)._map;
+
         if (isWall(start, tileMapData) || isWall(end, tileMapData)) {
             return undefined;
         }
@@ -36,6 +38,9 @@ namespace tiles {
         function updateOrFillLocation(l: tiles.Location, parent: LocationNode, cost: number) {
             const row = locationRow(l);
             const col = locationCol(l);
+            if (row < 0 || col < 0 || row >= tileMapData.height || col >= tileMapData.width ) {
+                return;
+            }
             const rowData = (encountedLocations[row] || (encountedLocations[row] = []));
             const lData = rowData[col];
 
@@ -54,7 +59,7 @@ namespace tiles {
 
             consideredTiles.push(
                 new PrioritizedLocation(
-                    start,
+                    l,
                     cost,
                     tileLocationHeuristic(l, end)
                 )
@@ -71,11 +76,14 @@ namespace tiles {
             
             const row = locationRow(currLocation.loc);
             const col = locationRow(currLocation.loc);
+            console.log(row + " " + col)
             const dataForCurrLocation = encountedLocations[row][col];
 
             if (dataForCurrLocation && dataForCurrLocation.visited) {
                 continue;
             }
+
+            console.log("here")
 
             dataForCurrLocation.visited = true;
 
@@ -87,8 +95,9 @@ namespace tiles {
             ];
 
             const nextCost = currLocation.cost + 1;
-
+            console.log('here too! ' + neighbors.filter(l => isWall(l, tileMapData)).length)
             for (const node of neighbors.filter(l => isWall(l, tileMapData))) {
+                console.log(node.x + " " + node.y)
                 updateOrFillLocation(node, dataForCurrLocation, nextCost);
             }
         }
