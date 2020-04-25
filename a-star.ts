@@ -12,7 +12,12 @@ namespace tiles {
 
     class LocationNode {
         public visited: boolean;
-        constructor(public parent: tiles.Location) {
+
+        constructor(
+            public l: tiles.Location,
+            public parent: LocationNode,
+            public lastCost: number
+        ) {
             this.visited = false;
         }
     }
@@ -21,15 +26,43 @@ namespace tiles {
         const consideredTiles = new Heap<PrioritizedLocation>(
             (a, b) => (a.cost + a.extraCost) - (b.cost + b.extraCost)
         );
-
         const encountedLocations: LocationNode[][] = [[]];
-        consideredTiles.push(new PrioritizedLocation(start, 0, 0));
+
+        function updateOrFillLocation(l: tiles.Location, parent: LocationNode, cost: number) {
+            const row = locationRow(l);
+            const col = locationCol(l);
+            const rowData = (encountedLocations[row] || (encountedLocations[row] = []));
+            const lData = rowData[col];
+
+            if (!lData) {
+                rowData[col] = new LocationNode(
+                    l,
+                    parent,
+                    cost
+                );
+            } else if (lData.lastCost > cost) {
+                lData.lastCost = cost;
+                lData.parent = parent;
+            } else {
+                return;
+            }
+
+            consideredTiles.push(
+                new PrioritizedLocation(
+                    start,
+                    cost,
+                    tileLocationHeuristic(l, end)
+                )
+            );
+        }
+        updateOrFillLocation(start, null, 0);
 
         while (consideredTiles.length !== 0) {
             const currLocation = consideredTiles.pop();
             const row = locationRow(currLocation.loc);
             const col = locationRow(currLocation.loc);
             const dataForCurrLocation = encountedLocations[row][col];
+
             if (currLocation.loc.x === end.x && currLocation.loc.y === end.y) {
                 break;
             } else if (dataForCurrLocation && dataForCurrLocation.visited) {
@@ -38,19 +71,38 @@ namespace tiles {
 
             dataForCurrLocation.visited = true;
 
-            // const outgoingEdges = input[currLocation];
+            const neighbors = [
+                tiles.getTileLocation(row - 1, col),
+                tiles.getTileLocation(row + 1, col),
+                tiles.getTileLocation(row, col - 1),
+                tiles.getTileLocation(row, col + 1)
+            ];
 
-            // // todo make outgoing edges the keys of outgoing edges, not the map itself
-            // for (const node in outgoingEdges) {
-            //     if (!evaluatedNodes[node]) {
-            //         evaluatedNodes[node] = {
-            //             cameFrom: currNode,
-            //             visited: false
-            //         };
-            //     }
-            //     consideredTiles.push(node);
-            // }
+            const nextCost = currLocation.cost + 1;
+
+            for (const node of neighbors) {
+                updateOrFillLocation(node, dataForCurrLocation, nextCost);
+            }
         }
+
+        const endRow = encountedLocations[locationRow(end)];
+        const endDataNode = endRow && endRow[locationCol(end)];
+
+        // no path found
+        if (!endDataNode)
+            return undefined;
+
+        let curr = endDataNode;
+
+        // otherwise trace back path to end
+        const output = [];
+
+        while (curr) {
+            output.push(curr.l);
+            curr = curr.parent;
+        }
+
+        return output;
     }
 
     function tileLocationHeuristic(tile: tiles.Location, target: tiles.Location) {
