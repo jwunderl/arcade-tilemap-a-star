@@ -41,7 +41,8 @@ namespace scene {
         function updateOrFillLocation(l: tiles.Location, parent: LocationNode, cost: number) {
             const row = locationRow(l);
             const col = locationCol(l);
-            if (row < 0 || col < 0 || row >= tileMapData.height || col >= tileMapData.width) {
+
+            if (tileMapData.isOutsideMap(col, row)) {
                 return;
             }
             const colData = (encountedLocations[col] || (encountedLocations[col] = []));
