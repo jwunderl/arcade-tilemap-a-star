@@ -38,14 +38,14 @@ namespace tiles {
         function updateOrFillLocation(l: tiles.Location, parent: LocationNode, cost: number) {
             const row = locationRow(l);
             const col = locationCol(l);
-            if (row < 0 || col < 0 || row >= tileMapData.height || col >= tileMapData.width ) {
+            if (row < 0 || col < 0 || row >= tileMapData.height || col >= tileMapData.width) {
                 return;
             }
-            const rowData = (encountedLocations[row] || (encountedLocations[row] = []));
-            const lData = rowData[col];
+            const colData = (encountedLocations[col] || (encountedLocations[col] = []));
+            const lData = colData[row];
 
             if (!lData) {
-                rowData[col] = new LocationNode(
+                colData[row] = new LocationNode(
                     l,
                     parent,
                     cost
@@ -73,37 +73,33 @@ namespace tiles {
             if (currLocation.loc.x === end.x && currLocation.loc.y === end.y) {
                 break;
             }
-            
+
             const row = locationRow(currLocation.loc);
-            const col = locationRow(currLocation.loc);
-            console.log(row + " " + col)
-            const dataForCurrLocation = encountedLocations[row][col];
+            const col = locationCol(currLocation.loc);
+
+            const dataForCurrLocation = encountedLocations[col][row];
 
             if (dataForCurrLocation && dataForCurrLocation.visited) {
                 continue;
             }
 
-            console.log("here")
-
             dataForCurrLocation.visited = true;
 
             const neighbors = [
-                tiles.getTileLocation(row - 1, col),
-                tiles.getTileLocation(row + 1, col),
-                tiles.getTileLocation(row, col - 1),
-                tiles.getTileLocation(row, col + 1)
+                tiles.getTileLocation(col - 1, row),
+                tiles.getTileLocation(col + 1, row),
+                tiles.getTileLocation(col, row - 1),
+                tiles.getTileLocation(col, row + 1)
             ];
 
             const nextCost = currLocation.cost + 1;
-            console.log('here too! ' + neighbors.filter(l => isWall(l, tileMapData)).length)
-            for (const node of neighbors.filter(l => isWall(l, tileMapData))) {
-                console.log(node.x + " " + node.y)
+            for (const node of neighbors.filter(l => !isWall(l, tileMapData))) {
                 updateOrFillLocation(node, dataForCurrLocation, nextCost);
             }
         }
 
-        const endRow = encountedLocations[locationRow(end)];
-        const endDataNode = endRow && endRow[locationCol(end)];
+        const endCol = encountedLocations[locationCol(end)];
+        const endDataNode = endCol && endCol[locationRow(end)];
 
         // no path found
         if (!endDataNode)
@@ -136,12 +132,12 @@ namespace tiles {
 
     // TODO: these should probably be exposed on tiles.Location;
     // no reason for them to be hidden
-    function locationRow(tiles: tiles.Location): number {
-        return (tiles as any)._row;
+    function locationRow(l: tiles.Location): number {
+        return l.y >> 4;
     }
 
-    function locationCol(tiles: tiles.Location): number {
-        return (tiles as any)._col;
+    function locationCol(l: tiles.Location): number {
+        return l.x >> 4;
     }
 
     function isWall(l: tiles.Location, data: tiles.TileMapData) {
