@@ -24,6 +24,7 @@ namespace tiles {
 
     export function aStar(start: tiles.Location, end: tiles.Location) {
         const tm = game.currentScene().tileMap;
+        // we should either expose this or the fns in this; I'm guessing pxt-tilemaps already does?
         const tileMapData = (tm as any)._map;
 
         if (isWall(start, tileMapData) || isWall(end, tileMapData)) {
