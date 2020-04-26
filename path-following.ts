@@ -18,16 +18,48 @@ namespace scene {
             game.currentScene().data[PATH_FOLLOW_KEY] = [] as PathFollowingSprite[];
 
             game.onUpdate(function () {
-                const store = game.currentScene().data[PATH_FOLLOW_KEY] as PathFollowingSprite[];
-                // foreach following sprite
-                // continually move linearly from index to index + 1
-                // if index + 1 === store.length, remove that one at the end
+                const store: PathFollowingSprite[] = game.currentScene().data[PATH_FOLLOW_KEY];
+                const toRemove: PathFollowingSprite[] = [];
+
+                for (const pfs of store) {
+                    const { sprite, index, path, speed } = pfs;
+                    const target = path[index];
+
+                    if (!target) {
+                        toRemove.push(pfs);
+                        continue;
+                    }
+
+                    const { x, y, vx, vy } = sprite;
+                    const pastTargetHorizontally = !vx || (vx < 0 && x <= target.x) || (vx > 0 && x >= target.x);
+                    const pastTargetVertically = !vy || (vy < 0 && y <= target.y) || (vy > 0 && y >= target.y);
+
+                    if (pastTargetVertically && pastTargetHorizontally) {
+                        // target next index
+                        pfs.index++;
+                        const newTarget = path[pfs.index];
+
+                        if (!newTarget) {
+                            toRemove.push(pfs);
+                        } else {
+                            const angle = Math.atan2(x - newTarget.x, y - newTarget.y);
+                            sprite.setVelocity(
+                                Math.cos(angle) * speed,
+                                Math.sin(angle) * speed
+                            );
+                        }
+                    }
+                }
+
+                if (toRemove.length) {
+                    game.currentScene().data[PATH_FOLLOW_KEY] = store.filter(el => toRemove.indexOf(el) !== -1);
+                }
             });
         }
     }
 
     // TODO: probably should have logic to bail when a tile that wasn't a wall
-    //      is set to be a wall.
+    //      is set to be a wall. Or just use velocity, and let enemy run into wall 
     // TODO: maybe logic for if path === previous path, or if we want to be fancy
     //      path  === remainder of previous path. that might be nice for if we recalculate
     //      optimal path mid path;if it's the same do nothing, otherwise start movement
@@ -46,26 +78,29 @@ namespace scene {
                 previousEl.speed = speed;
             }
 
-            if (!path) {
+            const start = path && path[0];
+            if (!start) {
                 store.removeElement(previousEl);
                 return;
             }
 
-            const start = path[0];
-            start && start.place(sprite);
-
+            start.place(sprite);
             previousEl.path = path;
             previousEl.index = 0;
         } else if (path) {
-            game.currentScene().data[PATH_FOLLOW_KEY].push(
-                new PathFollowingSprite(
-                    sprite,
-                    path,
-                    speed
-                )
-            )
             const start = path[0];
-            start && start.place(sprite);
+
+            if (start) {
+                sprite.setVelocity(0, 0);
+                game.currentScene().data[PATH_FOLLOW_KEY].push(
+                    new PathFollowingSprite(
+                        sprite,
+                        path,
+                        speed
+                    )
+                )
+                start.place(sprite);
+            }
         }
     }
 }
