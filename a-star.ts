@@ -88,7 +88,8 @@ namespace scene {
 
             dataForCurrLocation.visited = true;
 
-            const neighbors: tiles.Location[] = [ ];
+            const neighbors: tiles.Location[] = [];
+            const corners: tiles.Location[] = [];
 
             const left = tiles.getTileLocation(col - 1, row);
             const right = tiles.getTileLocation(col + 1, row);
@@ -104,11 +105,11 @@ namespace scene {
                 neighbors.push(left);
                 if (!topIsWall) {
                     const topLeft = tiles.getTileLocation(col - 1, row - 1);
-                    if (!isWall(topLeft, tm)) neighbors.push(topLeft);
+                    if (!isWall(topLeft, tm)) corners.push(topLeft);
                 }
                 if (!bottomIsWall) {
                     const bottomLeft = tiles.getTileLocation(col - 1, row + 1);
-                    if (!isWall(bottomLeft, tm)) neighbors.push(bottomLeft);
+                    if (!isWall(bottomLeft, tm)) corners.push(bottomLeft);
                 }
             }
 
@@ -116,20 +117,28 @@ namespace scene {
                 neighbors.push(right);
                 if (!topIsWall) {
                     const topRight = tiles.getTileLocation(col + 1, row - 1);
-                    if (!isWall(topRight, tm)) neighbors.push(topRight);
+                    if (!isWall(topRight, tm)) corners.push(topRight);
                 }
                 if (!bottomIsWall) {
                     const bottomRight = tiles.getTileLocation(col + 1, row + 1);
-                    if (!isWall(bottomRight, tm)) neighbors.push(bottomRight);
+                    if (!isWall(bottomRight, tm)) corners.push(bottomRight);
                 }
             }
 
             if (!topIsWall) neighbors.push(top);
             if (!bottomIsWall) neighbors.push(bottom);
 
-            const nextCost = currLocation.cost + 1;
+            // TODO: account for extra transition time for diagonals;
+            const neighborCost = currLocation.cost + 1;
             for (const node of neighbors) {
-                updateOrFillLocation(node, dataForCurrLocation, nextCost);
+                updateOrFillLocation(node, dataForCurrLocation, neighborCost);
+            }
+            if (corners.length) {
+                const costToMoveToCorner = 2 / (Math.sqrt(2));
+                const cornerCost = currLocation.cost + costToMoveToCorner;
+                for (const corner of corners) {
+                    updateOrFillLocation(corner, dataForCurrLocation, cornerCost);
+                }
             }
         }
 

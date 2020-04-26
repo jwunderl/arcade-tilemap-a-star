@@ -38,7 +38,7 @@ tiles.setTilemap(tiles.createTilemap(
 
 let flag = false;
 controller.A.onEvent(ControllerButtonEvent.Pressed, () => {
-    const res = scene.aStar(tiles.getTileLocation(0, 0), tiles.getTileLocation(9, 0)) || [];
+    const res = scene.aStar(tiles.getTileLocation(0, 0), tiles.getTileLocation(9, 0));
     const mySprite = sprites.create(img`
         8 8 8 8 8 8 8 8
         8 8 8 8 8 8 8 8
