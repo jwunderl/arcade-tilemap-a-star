@@ -68,7 +68,12 @@ namespace scene {
     // TODO: maybe something better than just placing on tile when sprite position
     //      is not he same as tile position
 
-    //% block="sprite $sprite follow path $path"
+    /**
+     * @param sprite sprite to give a path to
+     * @param path path to follow
+     * @param speed speed at which to follow path eg: 50
+     */
+    //% block="sprite $sprite follow path $path || speed %speed"
     //% sprite.shadow="variables_get"
     //% sprite.defl="mySprite"
     //% path.shadow="variables_get"
