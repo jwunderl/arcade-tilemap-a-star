@@ -88,15 +88,47 @@ namespace scene {
 
             dataForCurrLocation.visited = true;
 
-            const neighbors = [
-                tiles.getTileLocation(col - 1, row),
-                tiles.getTileLocation(col + 1, row),
-                tiles.getTileLocation(col, row - 1),
-                tiles.getTileLocation(col, row + 1)
-            ];
+            const neighbors: tiles.Location[] = [ ];
+
+            const left = tiles.getTileLocation(col - 1, row);
+            const right = tiles.getTileLocation(col + 1, row);
+            const top = tiles.getTileLocation(col, row - 1);
+            const bottom = tiles.getTileLocation(col, row + 1);
+
+            const leftIsWall = isWall(left, tm);
+            const rightIsWall = isWall(right, tm);
+            const topIsWall = isWall(top, tm);
+            const bottomIsWall = isWall(bottom, tm);
+
+            if (!leftIsWall) {
+                neighbors.push(left);
+                if (!topIsWall) {
+                    const topLeft = tiles.getTileLocation(col - 1, row - 1);
+                    if (!isWall(topLeft, tm)) neighbors.push(topLeft);
+                }
+                if (!bottomIsWall) {
+                    const bottomLeft = tiles.getTileLocation(col - 1, row + 1);
+                    if (!isWall(bottomLeft, tm)) neighbors.push(bottomLeft);
+                }
+            }
+
+            if (!rightIsWall) {
+                neighbors.push(right);
+                if (!topIsWall) {
+                    const topRight = tiles.getTileLocation(col + 1, row - 1);
+                    if (!isWall(topRight, tm)) neighbors.push(topRight);
+                }
+                if (!bottomIsWall) {
+                    const bottomRight = tiles.getTileLocation(col + 1, row + 1);
+                    if (!isWall(bottomRight, tm)) neighbors.push(bottomRight);
+                }
+            }
+
+            if (!topIsWall) neighbors.push(top);
+            if (!bottomIsWall) neighbors.push(bottom);
 
             const nextCost = currLocation.cost + 1;
-            for (const node of neighbors.filter(l => !isWall(l, tm))) {
+            for (const node of neighbors) {
                 updateOrFillLocation(node, dataForCurrLocation, nextCost);
             }
         }
