@@ -67,6 +67,13 @@ namespace scene {
     //      optimal path mid path;if it's the same do nothing, otherwise start movement
     // TODO: maybe something better than just placing on tile when sprite position
     //      is not he same as tile position
+
+    //% block="sprite $sprite follow path $path"
+    //% sprite.shadow="variables_get"
+    //% sprite.defl="mySprite"
+    //% path.shadow="variables_get"
+    //% path.defl="locationTiles"
+    //% group="Tiles" weight=9
     export function followPath(sprite: Sprite, path: tiles.Location[], speed?: number) {
         if (!sprite)
             return;
