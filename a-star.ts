@@ -32,7 +32,7 @@ namespace scene {
         }
 
         const consideredTiles = new Heap<PrioritizedLocation>(
-            (a, b) => (a.cost + a.extraCost) - (b.cost + b.extraCost)
+            (a, b) => (a.cost ** 2 + a.extraCost) - (b.cost ** 2 + b.extraCost)
         );
         const encountedLocations: LocationNode[][] = [[]];
 
@@ -128,13 +128,13 @@ namespace scene {
             if (!topIsWall) neighbors.push(top);
             if (!bottomIsWall) neighbors.push(bottom);
 
-            // TODO: account for extra transition time for diagonals;
             const neighborCost = currLocation.cost + 1;
             for (const node of neighbors) {
                 updateOrFillLocation(node, dataForCurrLocation, neighborCost);
             }
             if (corners.length) {
-                const costToMoveToCorner = 2 / (Math.sqrt(2));
+                // 2 / Math.sqrt(2)
+                const costToMoveToCorner = 1.414213562373095;
                 const cornerCost = currLocation.cost + costToMoveToCorner;
                 for (const corner of corners) {
                     updateOrFillLocation(corner, dataForCurrLocation, cornerCost);
@@ -168,10 +168,8 @@ namespace scene {
         const endCol = locationCol(target);
         const endRow = locationRow(target);
 
-        return Math.sqrt(
-            (startCol - endCol) ** 2
-            + (startRow - endRow) ** 2
-        );
+        return ((startCol - endCol) ** 2
+            + (startRow - endRow) ** 2) >> 2;
     }
 
     // TODO: these should probably be exposed on tiles.Location;
