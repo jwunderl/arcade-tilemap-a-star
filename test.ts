@@ -36,11 +36,29 @@ tiles.setTilemap(tiles.createTilemap(
     TileScale.Sixteen
 ))
 
-
+let flag = false;
 controller.A.onEvent(ControllerButtonEvent.Pressed, () => {
-    const res = scene.aStar(tiles.getTileLocation(0, 0), tiles.getTileLocation(9, 0));
-    for (const l of (res || [])) {
-        tiles.setTileAt(l, sprites.castle.tilePath4)
-        pause(100)
-    }
+    const res = scene.aStar(tiles.getTileLocation(0, 0), tiles.getTileLocation(9, 0)) || [];
+    const mySprite = sprites.create(img`
+        8 8 8 8 8 8 8 8
+        8 8 8 8 8 8 8 8
+        8 8 8 8 8 8 8 8
+        8 8 8 8 8 8 8 8
+        8 8 8 8 8 8 8 8
+        8 8 8 8 8 8 8 8
+        8 8 8 8 8 8 8 8
+        8 8 8 8 8 8 8 8
+    `)
+
+    scene.followPath(mySprite, res);
+
+    control.runInParallel(function () {
+        if (!flag) {
+            flag = true;
+            for (const l of res) {
+                tiles.setTileAt(l, sprites.castle.tilePath4)
+                pause(100)
+            }
+        }
+    })
 });

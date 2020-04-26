@@ -25,11 +25,6 @@ namespace scene {
                     const { sprite, index, path, speed } = pfs;
                     const target = path[index];
 
-                    if (!target) {
-                        toRemove.push(pfs);
-                        continue;
-                    }
-
                     const { x, y, vx, vy } = sprite;
                     const pastTargetHorizontally = !vx || (vx < 0 && x <= target.x) || (vx > 0 && x >= target.x);
                     const pastTargetVertically = !vy || (vy < 0 && y <= target.y) || (vy > 0 && y >= target.y);
@@ -38,11 +33,18 @@ namespace scene {
                         // target next index
                         pfs.index++;
                         const newTarget = path[pfs.index];
-
                         if (!newTarget) {
+                            sprite.setVelocity(0, 0);
+                            target.place(sprite);
                             toRemove.push(pfs);
                         } else {
-                            const angle = Math.atan2(x - newTarget.x, y - newTarget.y);
+                            target.place(sprite);
+
+                            const angle = Math.atan2(
+                                newTarget.y - y,
+                                newTarget.x - x
+                            );
+
                             sprite.setVelocity(
                                 Math.cos(angle) * speed,
                                 Math.sin(angle) * speed
@@ -51,8 +53,8 @@ namespace scene {
                     }
                 }
 
-                if (toRemove.length) {
-                    game.currentScene().data[PATH_FOLLOW_KEY] = store.filter(el => toRemove.indexOf(el) !== -1);
+                for (const el of toRemove) {
+                    store.removeElement(el);
                 }
             });
         }
@@ -74,7 +76,7 @@ namespace scene {
         const previousEl = store.find(el => el.sprite === sprite);
 
         if (previousEl) {
-            if (speed !== null && speed !== undefined) {
+            if (speed) {
                 previousEl.speed = speed;
             }
 
@@ -92,13 +94,13 @@ namespace scene {
 
             if (start) {
                 sprite.setVelocity(0, 0);
-                game.currentScene().data[PATH_FOLLOW_KEY].push(
+                store.push(
                     new PathFollowingSprite(
                         sprite,
                         path,
-                        speed
+                        speed || 50
                     )
-                )
+                );
                 start.place(sprite);
             }
         }
