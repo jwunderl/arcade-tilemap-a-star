@@ -53,7 +53,7 @@ namespace scene {
                     parent,
                     cost
                 );
-            } else if (lData.lastCost > cost) {
+            } else if (!lData.visited && lData.lastCost > cost) {
                 lData.lastCost = cost;
                 lData.parent = parent;
             } else {
