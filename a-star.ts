@@ -60,11 +60,17 @@ namespace scene {
                 return;
             }
 
+            let h = tileLocationHeuristic(l, end);
+            // need to store extra cost on location node too, and keep that up to date
+            // if (h > parent.extraCost) {
+
+            // }
+
             consideredTiles.push(
                 new PrioritizedLocation(
                     l,
                     cost,
-                    tileLocationHeuristic(l, end)
+                    h
                 )
             );
         }
@@ -169,7 +175,7 @@ namespace scene {
         const endRow = locationRow(target);
 
         return ((startCol - endCol) ** 2
-            + (startRow - endRow) ** 2) >> 2;
+            + (startRow - endRow) ** 2)
     }
 
     // TODO: these should probably be exposed on tiles.Location;
