@@ -50,7 +50,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, () => {
         8 8 8 8 8 8 8 8
     `)
 
-    scene.followPath(mySprite, res);
+    scene._followPath(mySprite, res, 50, () => game.splash("hi!"));
 
     control.runInParallel(function () {
         if (!flag) {

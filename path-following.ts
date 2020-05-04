@@ -3,6 +3,7 @@ namespace scene {
 
     class PathFollowingSprite {
         public index: number;
+        public onEndHandler: () => void;
 
         constructor (
             public sprite: Sprite,
@@ -37,6 +38,9 @@ namespace scene {
                             sprite.setVelocity(0, 0);
                             target.place(sprite);
                             toRemove.push(pfs);
+                            if (pfs.onEndHandler) {
+                                pfs.onEndHandler();
+                            }
                         } else {
                             target.place(sprite);
 
@@ -80,6 +84,10 @@ namespace scene {
     //% path.defl="locationTiles"
     //% group="Tiles" weight=9
     export function followPath(sprite: Sprite, path: tiles.Location[], speed?: number) {
+        _followPath(sprite, path, speed);
+    }
+
+    export function _followPath(sprite: Sprite, path: tiles.Location[], speed?: number, endCb?: () => void) {
         if (!sprite)
             return;
 
@@ -101,18 +109,21 @@ namespace scene {
             start.place(sprite);
             previousEl.path = path;
             previousEl.index = 0;
+
+            if (previousEl.onEndHandler)
+                previousEl.onEndHandler = endCb;
         } else if (path) {
             const start = path[0];
 
             if (start) {
                 sprite.setVelocity(0, 0);
-                store.push(
-                    new PathFollowingSprite(
-                        sprite,
-                        path,
-                        speed || 50
-                    )
+                const pfs = new PathFollowingSprite(
+                    sprite,
+                    path,
+                    speed || 50
                 );
+                pfs.onEndHandler = endCb;
+                store.push(pfs);
                 start.place(sprite);
             }
         }
