@@ -96,7 +96,9 @@ namespace scene {
             // off path, so path to it first
             const pathToNearest = aStar(currentLocation, path[nearestIdx])
             _followPath(sprite, pathToNearest, speed, () => {
-                _followPath(sprite, remainingPath, speed);
+                control.runInParallel(function () {
+                    _followPath(sprite, remainingPath, speed);
+                })
             })
         }
     }
