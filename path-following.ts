@@ -84,11 +84,17 @@ namespace scene {
     //% path.defl="locationTiles"
     //% group="Tiles" weight=9
     export function followPath(sprite: Sprite, path: tiles.Location[], speed?: number) {
+        if (!path || !path.length)
+            return;
+
+        if (!speed)
+            speed = 50;
+
         // if we're on the path already, just follow the subset of the remaining path
         let remainingPath = getRemainingPath(sprite, path);
         if (remainingPath) {
             _followPath(sprite, remainingPath, speed);
-            return
+            return;
         }
 
         // otherwise, path with a-star (no heuristic) to the path
