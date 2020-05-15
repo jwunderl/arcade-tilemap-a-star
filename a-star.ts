@@ -26,8 +26,31 @@ namespace scene {
     //% group="Tiles" weight=10
     export function aStar(start: tiles.Location, end: tiles.Location) {
         const tm = game.currentScene().tileMap;
+        if (isWall(end, tm))
+            return undefined
 
-        if (isWall(start, tm) || isWall(end, tm)) {
+        return generalAStar(tm, start,
+            t => tileLocationHeuristic(t, end),
+            l => l.x === end.x && l.y === end.y);
+    }
+
+    export function aStarToAnyOfType(start: tiles.Location, tile: Image) {
+        const tm = game.currentScene().tileMap;
+
+        const endIndex = tm.getImageType(tile);
+
+        return generalAStar(tm, start,
+            t => 0,
+            l => {
+                return endIndex === tm.getTileIndex((l as any)._col, (l as any)._row)
+            });
+    }
+
+    export function generalAStar(tm: tiles.TileMap, start: tiles.Location,
+        heuristic: (tile: tiles.Location) => number,
+        isEnd: (tile: tiles.Location) => boolean): tiles.Location[] {
+
+        if (isWall(start, tm)) {
             return undefined;
         }
 
@@ -60,7 +83,7 @@ namespace scene {
                 return;
             }
 
-            let h = tileLocationHeuristic(l, end);
+            let h = heuristic(l);
             // need to store extra cost on location node too, and keep that up to date
             // if (h > parent.extraCost) {
 
@@ -76,10 +99,12 @@ namespace scene {
         }
         updateOrFillLocation(start, null, 0);
 
+        let end: tiles.Location = null;
         while (consideredTiles.length !== 0) {
             const currLocation = consideredTiles.pop();
 
-            if (currLocation.loc.x === end.x && currLocation.loc.y === end.y) {
+            if (isEnd(currLocation.loc)) {
+                end = currLocation.loc;
                 break;
             }
 
@@ -152,7 +177,7 @@ namespace scene {
         const endDataNode = endCol && endCol[locationRow(end)];
 
         // no path found
-        if (!endDataNode)
+        if (!end || !endDataNode)
             return undefined;
 
         let curr = endDataNode;
