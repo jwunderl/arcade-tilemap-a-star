@@ -84,6 +84,24 @@ namespace scene {
     //% path.defl="locationTiles"
     //% group="Tiles" weight=9
     export function followPath(sprite: Sprite, path: tiles.Location[], speed?: number) {
+        const currentLocation = locationOfSprite(sprite)
+        const nearestIdx = getNearestPathIdx(sprite, path)
+        const nearestTile = path[nearestIdx]
+        const remainingPath = nearestIdx === 0 ? path : path.filter((_, i) => i >= nearestIdx);
+        if (nearestTile.x === currentLocation.x && nearestTile.y ===  currentLocation.y) {
+            // already on the path
+            _followPath(sprite, remainingPath, speed);
+        }
+        else {
+            // off path, so path to it first
+            const pathToNearest = aStar(currentLocation, path[nearestIdx])
+            _followPath(sprite, pathToNearest, speed, () => {
+                _followPath(sprite, remainingPath, speed);
+            })
+        }
+    }
+
+    export function teleportToAndFollowPath(sprite: Sprite, path: tiles.Location[], speed?: number) {
         _followPath(sprite, path, speed);
     }
 
@@ -127,5 +145,34 @@ namespace scene {
                 start.place(sprite);
             }
         }
+    }
+
+
+    /**
+     * Returns the index in the path which is closest to the current sprite
+     */
+    export function getNearestPathIdx(sprite: Sprite, path: tiles.Location[]): number {
+        let minDistSqrd = 99999
+        let idx = 0;
+        for (let i = 0; i < path.length; i++) {
+            let t = path[i];
+            let distSqrd = (sprite.x - t.x)**2 + (sprite.y - t.y)**2;
+            if (distSqrd < minDistSqrd) {
+                minDistSqrd = distSqrd;
+                idx = i;
+            }
+        }
+        return idx
+    }
+
+    // TODO: this really needs to be in common packages...
+    // copy-pasta from pxt-tilemaps
+    function screenCoordinateToTile(value: number) {
+        const tm = game.currentScene().tileMap;
+        if (!tm) return value >> 4;
+        return value >> tm.scale;
+    }
+    function locationOfSprite(s: Sprite): tiles.Location {
+        return tiles.getTileLocation(screenCoordinateToTile(s.x), screenCoordinateToTile(s.y));
     }
 }
