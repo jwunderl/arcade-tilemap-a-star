@@ -84,23 +84,31 @@ namespace scene {
     //% path.defl="locationTiles"
     //% group="Tiles" weight=9
     export function followPath(sprite: Sprite, path: tiles.Location[], speed?: number) {
-        const currentLocation = locationOfSprite(sprite)
-        const nearestIdx = getNearestPathIdx(sprite, path)
-        const nearestTile = path[nearestIdx]
-        const remainingPath = nearestIdx === 0 ? path : path.filter((_, i) => i >= nearestIdx);
-        if (nearestTile.x === currentLocation.x && nearestTile.y ===  currentLocation.y) {
-            // already on the path
+        // if we're on the path already, just follow the subset of the remaining path
+        let remainingPath = getRemainingPath(sprite, path);
+        if (remainingPath) {
             _followPath(sprite, remainingPath, speed);
+            return
         }
-        else {
-            // off path, so path to it first
-            const pathToNearest = aStar(currentLocation, path[nearestIdx])
-            _followPath(sprite, pathToNearest, speed, () => {
-                control.runInParallel(function () {
-                    _followPath(sprite, remainingPath, speed);
-                })
+
+        // otherwise, path with a-star (no heuristic) to the path
+        const currentLocation = locationOfSprite(sprite)
+        const tm = game.currentScene().tileMap;
+        const pathToNearest = generalAStar(tm, currentLocation, () => 0, tile => {
+            for (let pathTile of path) {
+                if (tile.x === pathTile.x && tile.y === pathTile.y) {
+                    return true;
+                }
+            }
+            return false;
+        });
+        _followPath(sprite, pathToNearest, speed, () => {
+            // then follow the remaining of the path
+            control.runInParallel(function () {
+                let remainingPath = getRemainingPath(sprite, path);
+                 _followPath(sprite, remainingPath, speed);
             })
-        }
+        })
     }
 
     export function teleportToAndFollowPath(sprite: Sprite, path: tiles.Location[], speed?: number) {
@@ -151,7 +159,7 @@ namespace scene {
 
 
     /**
-     * Returns the index in the path which is closest to the current sprite
+     * Returns the index in the path which is closest to the current sprite by direct distance
      */
     export function getNearestPathIdx(sprite: Sprite, path: tiles.Location[]): number {
         let minDistSqrd = 99999
@@ -174,7 +182,20 @@ namespace scene {
         if (!tm) return value >> 4;
         return value >> tm.scale;
     }
+
     function locationOfSprite(s: Sprite): tiles.Location {
         return tiles.getTileLocation(screenCoordinateToTile(s.x), screenCoordinateToTile(s.y));
+    }
+
+    function getRemainingPath(sprite: Sprite, path: tiles.Location[]): tiles.Location[] | null {
+        const currentLocation = locationOfSprite(sprite)
+        for (let i = 0; i < path.length; i++) {
+            const pathTile = path[i];
+            if (currentLocation.x === pathTile.x && currentLocation.y === pathTile.y) {
+                const remainingPath = i === 0 ? path : path.filter((_, j) => j >= i);
+                return remainingPath;
+            }
+        }
+        return null
     }
 }
