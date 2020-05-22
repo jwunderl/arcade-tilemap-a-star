@@ -20,9 +20,12 @@ namespace scene {
 
             game.onUpdate(function () {
                 const store: PathFollowingSprite[] = game.currentScene().data[PATH_FOLLOW_KEY];
-                const toRemove: PathFollowingSprite[] = [];
 
-                for (const pfs of store) {
+                for (let i = store.length - 1; i >= 0; i--)
+                    // note we enumerate from the end so we can safely remove and push without changing
+                    // the worklist
+                {
+                    const pfs = store[i]
                     const { sprite, index, path, speed } = pfs;
                     const target: tiles.Location = path[index];
 
@@ -38,7 +41,7 @@ namespace scene {
                         if (!newTarget) {
                             sprite.setVelocity(0, 0);
                             target.place(sprite);
-                            toRemove.push(pfs);
+                            store.removeAt(i);
                             if (pfs.onEndHandler) {
                                 pfs.onEndHandler();
                             }
@@ -47,12 +50,6 @@ namespace scene {
                             setVelocityTowards(sprite, newTarget, speed);
                         }
                     }
-
-                    
-                }
-
-                for (const el of toRemove) {
-                    store.removeElement(el);
                 }
             });
         }
@@ -109,10 +106,8 @@ namespace scene {
         });
         _followPath(sprite, pathToNearest, speed, () => {
             // then follow the remaining of the path
-            control.runInParallel(function () {
-                let remainingPath = getRemainingPath(sprite, path);
-                 _followPath(sprite, remainingPath, speed);
-            })
+            let remainingPath = getRemainingPath(sprite, path);
+                _followPath(sprite, remainingPath, speed);
         })
     }
 
