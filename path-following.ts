@@ -24,13 +24,14 @@ namespace scene {
 
                 for (const pfs of store) {
                     const { sprite, index, path, speed } = pfs;
-                    const target = path[index];
+                    const target: tiles.Location = path[index];
 
                     const { x, y, vx, vy } = sprite;
+
                     const pastTargetHorizontally = !vx || (vx < 0 && x <= target.x) || (vx > 0 && x >= target.x);
                     const pastTargetVertically = !vy || (vy < 0 && y <= target.y) || (vy > 0 && y >= target.y);
 
-                    if (pastTargetVertically && pastTargetHorizontally) {
+                    if (pastTargetHorizontally && pastTargetVertically) {
                         // target next index
                         pfs.index++;
                         const newTarget = path[pfs.index];
@@ -43,18 +44,11 @@ namespace scene {
                             }
                         } else {
                             target.place(sprite);
-
-                            const angle = Math.atan2(
-                                newTarget.y - y,
-                                newTarget.x - x
-                            );
-
-                            sprite.setVelocity(
-                                Math.cos(angle) * speed,
-                                Math.sin(angle) * speed
-                            );
+                            setVelocityTowards(sprite, newTarget, speed);
                         }
                     }
+
+                    
                 }
 
                 for (const el of toRemove) {
@@ -62,6 +56,14 @@ namespace scene {
                 }
             });
         }
+    }
+
+    function setVelocityTowards(sprite: Sprite, target: tiles.Location, speed: number) {
+        const dx = target.x - sprite.x;
+        const dy = target.y - sprite.y;
+        const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+        sprite.vx = (dx / dist) * speed;
+        sprite.vy = (dy / dist) * speed;
     }
 
     // TODO: probably should have logic to bail when a tile that wasn't a wall
@@ -83,12 +85,9 @@ namespace scene {
     //% path.shadow="variables_get"
     //% path.defl="locationTiles"
     //% group="Tiles" weight=9
-    export function followPath(sprite: Sprite, path: tiles.Location[], speed?: number) {
-        if (!path || !path.length)
+    export function followPath(sprite: Sprite, path: tiles.Location[], speed: number = 50) {
+        if (!sprite || !path || !path.length)
             return;
-
-        if (!speed)
-            speed = 50;
 
         // if we're on the path already, just follow the subset of the remaining path
         let remainingPath = getRemainingPath(sprite, path);
@@ -129,38 +128,33 @@ namespace scene {
         const store = game.currentScene().data[PATH_FOLLOW_KEY] as PathFollowingSprite[];
         const previousEl = store.find(el => el.sprite === sprite);
 
-        if (previousEl) {
-            if (speed) {
-                previousEl.speed = speed;
-            }
-
-            const start = path && path[0];
-            if (!start) {
+        const start = path && path[0];
+        if (!start) {
+            if (previousEl) {
                 store.removeElement(previousEl);
-                return;
             }
+            return;
+        }
 
-            start.place(sprite);
+        const pfs = previousEl || new PathFollowingSprite(
+            sprite,
+            path,
+            speed || 50
+        );
+
+        if (previousEl) {
+            if (speed)
+                previousEl.speed = speed;
             previousEl.path = path;
             previousEl.index = 0;
-
-            if (previousEl.onEndHandler)
+            if (endCb)
                 previousEl.onEndHandler = endCb;
-        } else if (path) {
-            const start = path[0];
-
-            if (start) {
-                sprite.setVelocity(0, 0);
-                const pfs = new PathFollowingSprite(
-                    sprite,
-                    path,
-                    speed || 50
-                );
-                pfs.onEndHandler = endCb;
-                store.push(pfs);
-                start.place(sprite);
-            }
+        } else {
+            pfs.onEndHandler = endCb;
+            store.push(pfs);
         }
+
+        setVelocityTowards(sprite, start, pfs.speed)
     }
 
 
