@@ -64,12 +64,7 @@ namespace scene {
     }
 
     // TODO: probably should have logic to bail when a tile that wasn't a wall
-    //      is set to be a wall. Or just use velocity, and let enemy run into wall 
-    // TODO: maybe logic for if path === previous path, or if we want to be fancy
-    //      path  === remainder of previous path. that might be nice for if we recalculate
-    //      optimal path mid path;if it's the same do nothing, otherwise start movement
-    // TODO: maybe something better than just placing on tile when sprite position
-    //      is not he same as tile position
+    //      is set to be a wall. Or just use velocity, and let enemy run into wall
 
     /**
      * @param sprite sprite to give a path to
@@ -86,8 +81,30 @@ namespace scene {
         if (!sprite || !path || !path.length)
             return;
 
+        const tm = game.currentScene().tileMap;
+        if (!tm)
+            return;
+
+        // are we in a wall?
+        if (tm.isOnWall(sprite)) {
+            // if so, find the closest path tile by distance and teleport there
+            let nearestTile = path[0]
+            let minDistSquared = 999999;
+            for (let p of path) {
+                const distSqrd = (p.x - sprite.x)**2 + (p.y - sprite.y)**2
+                if (distSqrd < minDistSquared) {
+                    nearestTile = p
+                    minDistSquared = distSqrd
+                }
+            }
+            nearestTile.place(sprite);
+            const remainingPath = getRemainingPath(sprite, path);
+            _followPath(sprite, remainingPath, speed);
+            return
+        }
+
         // if we're on the path already, just follow the subset of the remaining path
-        let remainingPath = getRemainingPath(sprite, path);
+        const remainingPath = getRemainingPath(sprite, path);
         if (remainingPath) {
             _followPath(sprite, remainingPath, speed);
             return;
@@ -95,7 +112,6 @@ namespace scene {
 
         // otherwise, path with a-star (no heuristic) to the path
         const currentLocation = locationOfSprite(sprite)
-        const tm = game.currentScene().tileMap;
         const pathToNearest = generalAStar(tm, currentLocation, () => 0, tile => {
             for (let pathTile of path) {
                 if (tile.x === pathTile.x && tile.y === pathTile.y) {
@@ -106,7 +122,7 @@ namespace scene {
         });
         _followPath(sprite, pathToNearest, speed, () => {
             // then follow the remaining of the path
-            let remainingPath = getRemainingPath(sprite, path);
+            const remainingPath = getRemainingPath(sprite, path);
                 _followPath(sprite, remainingPath, speed);
         })
     }
@@ -170,8 +186,6 @@ namespace scene {
         return idx
     }
 
-    // TODO: this really needs to be in common packages...
-    // copy-pasta from pxt-tilemaps
     function screenCoordinateToTile(value: number) {
         const tm = game.currentScene().tileMap;
         if (!tm) return value >> 4;
