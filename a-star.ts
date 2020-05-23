@@ -173,7 +173,7 @@ namespace scene {
             }
         }
 
-        const endCol = encountedLocations[locationCol(end)];
+        const endCol = end && encountedLocations[locationCol(end)];
         const endDataNode = endCol && endCol[locationRow(end)];
 
         // no path found
