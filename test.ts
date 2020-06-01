@@ -48,7 +48,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, () => {
         8 8 8 8 8 8 8 8
         8 8 8 8 8 8 8 8
         8 8 8 8 8 8 8 8
-    `)
+    `, SpriteKind.Enemy)
 
     scene._followPath(mySprite, res, 50, () => game.splash("hi!"));
 
@@ -61,4 +61,13 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, () => {
             }
         }
     })
+});
+
+controller.B.onEvent(ControllerButtonEvent.Pressed, () => {
+    const pfs = sprites.allOfKind(SpriteKind.Enemy);
+    pfs.forEach(s => {
+        scene.followPath(s, null);
+        s.vx = 0;
+        s.vy = 0;
+    });
 });

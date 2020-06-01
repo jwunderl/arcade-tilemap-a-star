@@ -23,7 +23,7 @@ namespace scene {
     //% block="path from $start to $end"
     //% start.shadow=mapgettile
     //% end.shadow=mapgettile
-    //% group="Tiles" weight=10
+    //% group="Path Following" weight=10
     export function aStar(start: tiles.Location, end: tiles.Location) {
         const tm = game.currentScene().tileMap;
         if (isWall(end, tm))

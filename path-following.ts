@@ -76,10 +76,22 @@ namespace scene {
     //% sprite.defl="mySprite"
     //% path.shadow="variables_get"
     //% path.defl="locationTiles"
-    //% group="Tiles" weight=9
+    //% group="Path Following" weight=9
     export function followPath(sprite: Sprite, path: tiles.Location[], speed: number = 50) {
-        if (!sprite || !path || !path.length)
+        if (!sprite)
             return;
+        if (!path || !path.length || !speed) {
+            const pathFollowingSprites = getPathFollowingSprites();
+            if (pathFollowingSprites) {
+                for (let i = pathFollowingSprites.length - 1; i >= 0; i--) {
+                    const pfs = pathFollowingSprites[i];
+                    if (pfs.sprite === sprite) {
+                        pathFollowingSprites.removeAt(i);
+                    }
+                }
+            }
+            return;
+        }
 
         const tm = game.currentScene().tileMap;
         if (!tm)
@@ -120,10 +132,11 @@ namespace scene {
             }
             return false;
         });
+
         _followPath(sprite, pathToNearest, speed, () => {
             // then follow the remaining of the path
             const remainingPath = getRemainingPath(sprite, path);
-                _followPath(sprite, remainingPath, speed);
+            _followPath(sprite, remainingPath, speed);
         })
     }
 
@@ -136,7 +149,7 @@ namespace scene {
             return;
 
         init();
-        const store = game.currentScene().data[PATH_FOLLOW_KEY] as PathFollowingSprite[];
+        const store = getPathFollowingSprites();
         const previousEl = store.find(el => el.sprite === sprite);
 
         const start = path && path[0];
@@ -168,7 +181,6 @@ namespace scene {
         setVelocityTowards(sprite, start, pfs.speed)
     }
 
-
     /**
      * Returns the index in the path which is closest to the current sprite by direct distance
      */
@@ -184,6 +196,10 @@ namespace scene {
             }
         }
         return idx
+    }
+
+    function getPathFollowingSprites(): PathFollowingSprite[] {
+        return game.currentScene().data[PATH_FOLLOW_KEY] as PathFollowingSprite[];
     }
 
     function screenCoordinateToTile(value: number) {
