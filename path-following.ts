@@ -1,5 +1,6 @@
 namespace scene {
     const PATH_FOLLOW_KEY = "A_STAR_PATH_FOLLOW";
+    const PATH_COMPLETION_KEY = "A_STAR_PATH_COMPLETION_HANDLER";
 
     class PathFollowingSprite {
         public index: number;
@@ -14,12 +15,21 @@ namespace scene {
         }
     }
 
+    class PathCompletionEvent {
+        constructor(
+            public kind: number,
+            public handler: (sprite: Sprite, location: tiles.Location) => void
+        ) { }
+    }
+
     function init() {
         if (!game.currentScene().data[PATH_FOLLOW_KEY]) {
             game.currentScene().data[PATH_FOLLOW_KEY] = [] as PathFollowingSprite[];
+            game.currentScene().data[PATH_COMPLETION_KEY] = [] as PathCompletionEvent[];
 
             game.onUpdate(function () {
-                const store: PathFollowingSprite[] = game.currentScene().data[PATH_FOLLOW_KEY];
+                const store = getPathFollowingSprites();
+                const handlers = getPathCompletionEvents();
 
                 for (let i = store.length - 1; i >= 0; i--)
                     // note we enumerate from the end so we can safely remove and push without changing
@@ -42,8 +52,15 @@ namespace scene {
                             sprite.setVelocity(0, 0);
                             target.place(sprite);
                             store.removeAt(i);
+                            // explicit endCb overrides kind cb
                             if (pfs.onEndHandler) {
                                 pfs.onEndHandler();
+                            } else {
+                                handlers.forEach(completionHandler => {
+                                    if (completionHandler.kind === sprite.kind()) {
+                                        completionHandler.handler(sprite, path[pfs.index - 1]);
+                                    }
+                                });
                             }
                         } else {
                             target.place(sprite);
@@ -151,6 +168,7 @@ namespace scene {
     //% sprite.defl="mySprite"
     //% group="Path Following" weight=8
     export function spriteIsFollowingPath(sprite: Sprite): boolean {
+        init();
         return getPathFollowingSprites().some(pfs => pfs.sprite === sprite);
     }
 
@@ -165,6 +183,7 @@ namespace scene {
     //% sprite.defl="mySprite"
     //% group="Path Following" weight=7
     export function spritePercentPathCompleted(sprite: Sprite): number {
+        init();
         const pfs = getPathFollowingSprites().find(pfs => pfs.sprite === sprite);
         // TODO: is this behavior useful, or should this return 0 or undefined?
         if (!pfs)
@@ -172,6 +191,25 @@ namespace scene {
         return 100 - (100 * (pfs.path.length - pfs.index) / pfs.path.length);
     }
 
+    /**
+     * Event handler for when a sprite of the given kind completes a path
+     */
+    //% group="Overlaps"
+    //% weight=100 draggableParameters="reporter"
+    //% block="on $sprite of kind $kind completes path at $location"
+    //% kind.shadow=spritekind
+    //% group="Path Following" weight=6
+    export function onPathCompletion(
+        kind: number,
+        handler: (sprite: Sprite, location: tiles.Location) => void
+    ) {
+        init();
+        if (kind == null || !handler)
+            return;
+        getPathCompletionEvents().push(
+            new PathCompletionEvent(kind, handler)
+        );
+    }
 
     export function teleportToAndFollowPath(sprite: Sprite, path: tiles.Location[], speed?: number) {
         _followPath(sprite, path, speed);
@@ -198,14 +236,15 @@ namespace scene {
             path,
             speed || 50
         );
-
         if (previousEl) {
             if (speed)
                 previousEl.speed = speed;
             previousEl.path = path;
             previousEl.index = 0;
-            if (endCb)
+
+            if (endCb) {
                 previousEl.onEndHandler = endCb;
+            }
         } else {
             pfs.onEndHandler = endCb;
             store.push(pfs);
@@ -233,6 +272,10 @@ namespace scene {
 
     function getPathFollowingSprites(): PathFollowingSprite[] {
         return game.currentScene().data[PATH_FOLLOW_KEY] as PathFollowingSprite[];
+    }
+
+    function getPathCompletionEvents(): PathCompletionEvent[] {
+        return game.currentScene().data[PATH_COMPLETION_KEY] as PathCompletionEvent[];
     }
 
     function screenCoordinateToTile(value: number) {

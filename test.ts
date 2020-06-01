@@ -50,8 +50,8 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, () => {
         8 8 8 8 8 8 8 8
     `, SpriteKind.Enemy)
 
-    scene._followPath(mySprite, res, 50, () => game.splash("hi!"));
-
+    // scene._followPath(mySprite, res, 50, () => game.splash("hi!"));
+    scene.followPath(mySprite, res)
     control.runInParallel(function () {
         if (!flag) {
             flag = true;
@@ -61,6 +61,11 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, () => {
             }
         }
     })
+});
+
+scene.onPathCompletion(SpriteKind.Enemy, function (sprite: Sprite, location: tiles.Location) {
+    console.log(`${location.x} ${location.y}`)
+    sprite.destroy(effects.ashes);
 });
 
 controller.B.onEvent(ControllerButtonEvent.Pressed, () => {
