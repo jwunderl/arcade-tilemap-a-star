@@ -71,3 +71,11 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, () => {
         s.vy = 0;
     });
 });
+
+const dbg = true;
+game.onUpdate(() => {
+    if (dbg) {
+        sprites.allOfKind(SpriteKind.Enemy)
+            .forEach(s => s.say(scene.spritePercentPathCompleted(s)));
+    }
+})

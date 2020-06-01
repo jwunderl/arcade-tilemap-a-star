@@ -154,6 +154,25 @@ namespace scene {
         return getPathFollowingSprites().some(pfs => pfs.sprite === sprite);
     }
 
+    /**
+     * Returns an approximation between 0 and 100 of how much of the
+     * percentage of the path that the given sprite is following has completed.
+     * If the sprite is not currently following a path,
+     * this returns 100 (as the sprite has trivially completed the empty path).
+     */
+    //% block="percent sprite $sprite path completion"
+    //% sprite.shadow="variables_get"
+    //% sprite.defl="mySprite"
+    //% group="Path Following" weight=7
+    export function spritePercentPathCompleted(sprite: Sprite): number {
+        const pfs = getPathFollowingSprites().find(pfs => pfs.sprite === sprite);
+        // TODO: is this behavior useful, or should this return 0 or undefined?
+        if (!pfs)
+            return 100;
+        return 100 - (100 * (pfs.path.length - pfs.index) / pfs.path.length);
+    }
+
+
     export function teleportToAndFollowPath(sprite: Sprite, path: tiles.Location[], speed?: number) {
         _followPath(sprite, path, speed);
     }
