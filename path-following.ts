@@ -67,6 +67,7 @@ namespace scene {
     //      is set to be a wall. Or just use velocity, and let enemy run into wall
 
     /**
+     * Give a sprite a path to follow
      * @param sprite sprite to give a path to
      * @param path path to follow
      * @param speed speed at which to follow path eg: 50
@@ -138,6 +139,19 @@ namespace scene {
             const remainingPath = getRemainingPath(sprite, path);
             _followPath(sprite, remainingPath, speed);
         })
+    }
+
+    /**
+     * Returns true if the sprite is currently following a path,
+     * and false otherwise
+     * @param sprite sprite to check if following path
+     */
+    //% block="sprite $sprite is following a path"
+    //% sprite.shadow="variables_get"
+    //% sprite.defl="mySprite"
+    //% group="Path Following" weight=8
+    export function spriteIsFollowingPath(sprite: Sprite): boolean {
+        return getPathFollowingSprites().some(pfs => pfs.sprite === sprite);
     }
 
     export function teleportToAndFollowPath(sprite: Sprite, path: tiles.Location[], speed?: number) {

@@ -20,6 +20,9 @@ namespace scene {
         }
     }
 
+    /**
+     * Find the shortest path between start and end that does not contain walls.
+     */
     //% block="path from $start to $end"
     //% start.shadow=mapgettile
     //% end.shadow=mapgettile
