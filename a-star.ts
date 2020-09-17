@@ -23,7 +23,7 @@ namespace scene {
     /**
      * Find the shortest path between start and end that does not contain walls and optionally limited to a pathable tile.
      */
-    //% block="path from $start to $end|on tiles of $onTilesOf"
+    //% block="path from $start to $end||on tiles of $onTilesOf"
     //% start.shadow=mapgettile
     //% end.shadow=mapgettile
     //% onTilesOf.shadow=tileset_tile_picker
