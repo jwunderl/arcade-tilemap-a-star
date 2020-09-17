@@ -228,6 +228,6 @@ namespace scene {
         if (isWall(l, tm)) return false;
         if (!onTilesOf) return true;
         const img = tm.getTileImage(tm.getTileIndex(l.col, l.row))
-        return img == onTilesOf;
+        return img.equals(onTilesOf);
     }
 }
