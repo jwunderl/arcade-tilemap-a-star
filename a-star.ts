@@ -21,39 +21,41 @@ namespace scene {
     }
 
     /**
-     * Find the shortest path between start and end that does not contain walls.
+     * Find the shortest path between start and end that does not contain walls and optionally limited to a pathable tile.
      */
-    //% block="path from $start to $end"
+    //% block="path from $start to $end|on tiles of $onTilesOf"
     //% start.shadow=mapgettile
     //% end.shadow=mapgettile
+    //% onTilesOf.shadow=tileset_tile_picker
+    //% onTilesOf.decompileIndirectFixedInstances=true
     //% group="Path Following" weight=10
-    export function aStar(start: tiles.Location, end: tiles.Location) {
+    export function aStar(start: tiles.Location, end: tiles.Location, onTilesOf: Image = null) {
         const tm = game.currentScene().tileMap;
-        if (isWall(end, tm))
+        if (!isWalkable(end, onTilesOf, tm))
             return undefined
 
-        return generalAStar(tm, start,
+        return generalAStar(tm, start, onTilesOf,
             t => tileLocationHeuristic(t, end),
             l => l.x === end.x && l.y === end.y);
     }
 
-    export function aStarToAnyOfType(start: tiles.Location, tile: Image) {
+    export function aStarToAnyOfType(start: tiles.Location, tile: Image, onTilesOf: Image) {
         const tm = game.currentScene().tileMap;
 
         const endIndex = tm.getImageType(tile);
 
-        return generalAStar(tm, start,
+        return generalAStar(tm, start, onTilesOf,
             t => 0,
             l => {
                 return endIndex === tm.getTileIndex((l as any)._col, (l as any)._row)
             });
     }
 
-    export function generalAStar(tm: tiles.TileMap, start: tiles.Location,
+    export function generalAStar(tm: tiles.TileMap, start: tiles.Location, onTilesOf: Image,
         heuristic: (tile: tiles.Location) => number,
         isEnd: (tile: tiles.Location) => boolean): tiles.Location[] {
 
-        if (isWall(start, tm)) {
+        if (!isWalkable(start, onTilesOf, tm)) {
             return undefined;
         }
 
@@ -130,10 +132,10 @@ namespace scene {
             const top = tiles.getTileLocation(col, row - 1);
             const bottom = tiles.getTileLocation(col, row + 1);
 
-            const leftIsWall = isWall(left, tm);
-            const rightIsWall = isWall(right, tm);
-            const topIsWall = isWall(top, tm);
-            const bottomIsWall = isWall(bottom, tm);
+            const leftIsWall = !isWalkable(left, onTilesOf, tm);
+            const rightIsWall = !isWalkable(right, onTilesOf, tm);
+            const topIsWall = !isWalkable(top, onTilesOf, tm);
+            const bottomIsWall = !isWalkable(bottom, onTilesOf, tm);
 
             if (!leftIsWall) {
                 neighbors.push(left);
@@ -220,5 +222,12 @@ namespace scene {
         const r = locationRow(l);
         const c = locationCol(l);
         return tm.isObstacle(c, r);
+    }
+
+    function isWalkable(l: tiles.Location, onTilesOf: Image, tm: tiles.TileMap): boolean {
+        if (isWall(l, tm)) return false;
+        if (!onTilesOf) return true;
+        const img = tm.getTileImage(tm.getTileIndex(l.col, l.row))
+        return img == onTilesOf;
     }
 }

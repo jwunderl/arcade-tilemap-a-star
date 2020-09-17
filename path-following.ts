@@ -140,9 +140,9 @@ namespace scene {
             return;
         }
 
-        // otherwise, path with a-star (no heuristic) to the path
+        // otherwise, path with a-star (no heuristic and no onTileOf) to the path
         const currentLocation = locationOfSprite(sprite)
-        const pathToNearest = generalAStar(tm, currentLocation, () => 0, tile => {
+        const pathToNearest = generalAStar(tm, currentLocation, null, () => 0, tile => {
             for (let pathTile of path) {
                 if (tile.x === pathTile.x && tile.y === pathTile.y) {
                     return true;
