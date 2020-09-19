@@ -10,11 +10,11 @@
         "README.md",
         "main.ts",
         "a-star.ts",
-        "path-following.ts",
-        "tilemap.g.jres",
-        "tilemap.g.ts"
+        "path-following.ts"
     ],
     "testFiles": [
+        "tilemap.g.jres",
+        "tilemap.g.ts",
         "test.ts"
     ],
     "public": true,
