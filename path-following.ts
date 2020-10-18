@@ -104,6 +104,8 @@ namespace scene {
                 for (let i = pathFollowingSprites.length - 1; i >= 0; i--) {
                     const pfs = pathFollowingSprites[i];
                     if (pfs.sprite === sprite) {
+                        sprite.vx = 0;
+                        sprite.vy = 0;
                         pathFollowingSprites.removeAt(i);
                     }
                 }
