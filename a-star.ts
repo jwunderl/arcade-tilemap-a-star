@@ -31,8 +31,8 @@ namespace scene {
     //% group="Path Following" weight=10
     export function aStar(start: tiles.Location, end: tiles.Location, onTilesOf: Image = null) {
         const tm = game.currentScene().tileMap;
-        if (!isWalkable(end, onTilesOf, tm))
-            return undefined
+        if (!tm || !start || !end || !isWalkable(end, onTilesOf, tm))
+            return undefined;
 
         return generalAStar(tm, start, onTilesOf,
             t => tileLocationHeuristic(t, end),
@@ -41,8 +41,13 @@ namespace scene {
 
     export function aStarToAnyOfType(start: tiles.Location, tile: Image, onTilesOf: Image) {
         const tm = game.currentScene().tileMap;
-
+        if (!tm || !start)
+            return undefined;
         const endIndex = tm.getImageType(tile);
+        const potentialEndPoints = tm.getTilesByType(endIndex);
+
+        if (!potentialEndPoints || potentialEndPoints.length === 0)
+            return undefined;
 
         return generalAStar(tm, start, onTilesOf,
             t => 0,
