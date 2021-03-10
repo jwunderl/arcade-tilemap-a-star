@@ -9,6 +9,24 @@
         "mimeType": "image/x-mkcd-f4",
         "tilemapTile": true
     },
+    "tile2": {
+        "data": "hwQQABAAAADbu7u7u7u7vdu7uxu9u7u927u7G7G7u728vbsbsbvby7y9uxuxu9vLvL2727G728u8vbu7u7vby7y9u7u7u9vLvL27u7u728u8vbsbvbvby7y9uxuxu9vLvL27G7G728u8vbsbsbvby7y9u9uxu9vLvL27u7u728u8vbu7u7vbyw==",
+        "mimeType": "image/x-mkcd-f4",
+        "tilemapTile": true,
+        "displayName": "myTile"
+    },
+    "tile3": {
+        "data": "hwQQABAAAAC7y8zMzMzMzN29u7u7u7u7u9vd3d3d3d27u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u9sREbvbERG7GxHRuxsR0bu7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7vb3d3d3d3d3b27u7u7u7u7y8zMzMzMzA==",
+        "mimeType": "image/x-mkcd-f4",
+        "tilemapTile": true,
+        "displayName": "myTile0"
+    },
+    "tile4": {
+        "data": "hwQQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+        "mimeType": "image/x-mkcd-f4",
+        "tilemapTile": true,
+        "displayName": "myTile1"
+    },
     "level": {
         "id": "level",
         "mimeType": "application/mkcd-tilemap",
@@ -17,7 +35,25 @@
             "myTiles.transparency16",
             "sprites.castle.tilePath5",
             "sprites.castle.tileGrass1"
-        ]
+        ],
+        "displayName": "level"
+    },
+    "level1": {
+        "id": "level1",
+        "mimeType": "application/mkcd-tilemap",
+        "data": "MTAwYTAwMDgwMDA4MDcwNzA3MDcwNzA3MDcwNzA3MDQwNzA3MDcwNzA3MDcwNzA3MDcwMTAyMDIwMjAyMDUwNzA3MDcwNzA3MDcwNzA3MDcwNDA3MDcwNzA3MDcwNzA3MDcwNzAxMDIwMjAyMDUwNzA3MDcwNzA3MDcwNzA3MDcwNDA2MDIwMjAyMDIwMjAyMDIwMjAzMDcwNzA3MDcwNzA3MDcwNzA3MDcyMDIyMjIyMjIyMjAyMjIyMjIyMjAwMDAwMDIyMjIyMjIyMDIyMjIyMjIyMjAyMDAwMDIyMjIyMjIyMDIwMDAwMDAwMDAwMjIyMjIyMjIyMg==",
+        "tileset": [
+            "myTiles.transparency16",
+            "sprites.vehicle.roadTurn3",
+            "sprites.vehicle.roadHorizontal",
+            "sprites.vehicle.roadTurn4",
+            "sprites.vehicle.roadVertical",
+            "sprites.vehicle.roadTurn2",
+            "myTiles.tile2",
+            "sprites.castle.tilePath5",
+            "myTiles.tile3"
+        ],
+        "displayName": "level1"
     },
     "*": {
         "mimeType": "image/x-mkcd-f4",
