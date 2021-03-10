@@ -12,7 +12,9 @@
         "a-star.ts",
         "path-following.ts",
         "docs/a-star.md",
-        "docs/follow-path.md"
+        "docs/follow-path.md",
+        "docs/sprite-percent-path-completed.md",
+        "docs/sprite-is-following-path.md"
     ],
     "testFiles": [
         "tilemap.g.jres",

@@ -1,6 +1,7 @@
 # a star
 
 Get an array of tiles that form a path from **start** to **end**
+that does not contain walls (and optionally is restrict to a given type of tile).
 
 ```sig
 scene.aStar(null, null)
