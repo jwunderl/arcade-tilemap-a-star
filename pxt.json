@@ -10,7 +10,9 @@
         "README.md",
         "main.ts",
         "a-star.ts",
-        "path-following.ts"
+        "path-following.ts",
+        "docs/a-star.md",
+        "docs/follow-path.md"
     ],
     "testFiles": [
         "tilemap.g.jres",

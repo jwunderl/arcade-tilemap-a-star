@@ -28,6 +28,7 @@ namespace scene {
     //% end.shadow=mapgettile
     //% onTilesOf.shadow=tileset_tile_picker
     //% onTilesOf.decompileIndirectFixedInstances=true
+    //% help=github:arcade-tilemap-a-star/docs/a-star
     //% group="Path Following" weight=10
     export function aStar(start: tiles.Location, end: tiles.Location, onTilesOf: Image = null) {
         const tm = game.currentScene().tileMap;

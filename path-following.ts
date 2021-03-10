@@ -94,6 +94,7 @@ namespace scene {
     //% sprite.defl="mySprite"
     //% path.shadow="variables_get"
     //% path.defl="locationTiles"
+    //% help=github:arcade-tilemap-a-star/docs/follow-path
     //% group="Path Following" weight=9
     export function followPath(sprite: Sprite, path: tiles.Location[], speed: number = 50) {
         if (!sprite)
@@ -168,6 +169,7 @@ namespace scene {
     //% block="sprite $sprite is following a path"
     //% sprite.shadow="variables_get"
     //% sprite.defl="mySprite"
+    //% help=github:arcade-tilemap-a-star/docs/sprite-is-following-path
     //% group="Path Following" weight=8
     export function spriteIsFollowingPath(sprite: Sprite): boolean {
         init();
@@ -183,6 +185,7 @@ namespace scene {
     //% block="percent sprite $sprite path completion"
     //% sprite.shadow="variables_get"
     //% sprite.defl="mySprite"
+    //% help=github:arcade-tilemap-a-star/docs/sprite-percent-path-completed
     //% group="Path Following" weight=7
     export function spritePercentPathCompleted(sprite: Sprite): number {
         init();
@@ -200,6 +203,7 @@ namespace scene {
     //% weight=100 draggableParameters="reporter"
     //% block="on $sprite of kind $kind completes path at $location"
     //% kind.shadow=spritekind
+    //% help=github:arcade-tilemap-a-star/docs/on-path-completion
     //% group="Path Following" weight=6
     export function onPathCompletion(
         kind: number,
