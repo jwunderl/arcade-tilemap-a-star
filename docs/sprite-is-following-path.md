@@ -4,7 +4,7 @@ Returns true if the sprite is currently following a path,
 and false otherwise
 
 ```sig
-scene.spritePercentPathCompleted(null)
+scene.spriteIsFollowingPath(null)
 ```
 
 ## Parameters
