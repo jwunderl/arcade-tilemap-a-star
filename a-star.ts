@@ -223,7 +223,8 @@ namespace scene {
     function tileLocationHeuristic(tile: SimpleLocation, target: SimpleLocation) {
         const xDist = Math.abs(target.col - tile.col)
         const yDist = Math.abs(target.row - tile.row)
-        return Math.max(xDist, yDist) * 1000 + Math.min(xDist, yDist) * 414
+        return Math.max(xDist, yDist) * NEIGHBOR_COST + Math.min(xDist, yDist) * 
+(DIAGONAL_COST - NEIGHBOR_COST)
     }
 
     function isWalkable(loc: SimpleLocation, onTilesOf: Image, tm: tiles.TileMap): boolean {
