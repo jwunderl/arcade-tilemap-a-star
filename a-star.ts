@@ -1,8 +1,8 @@
 //+array+SimpleLocation sim:7.5%, meowbit:10.5% ms comparing with origin
 namespace scene {
     //costs, scaled up by 1000
-    NEIGHBOR_COST=1000
-    DIAGONAL_COST=1414
+    const NEIGHBOR_COST=1000
+    const DIAGONAL_COST=1414
     class PrioritizedLocation {
         constructor(
             public loc: SimpleLocation,
