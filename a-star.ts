@@ -176,6 +176,10 @@ namespace scene {
             const neighborCost = currLocation.cost + NEIGHBOR_COST;
             const cornerCost = currLocation.cost + DIAGONAL_COST;
             
+
+            const neighborCost = currLocation.cost + NEIGHBOR_COST;
+            const cornerCost = currLocation.cost + DIAGONAL_COST;
+            
             if (!leftIsWall) {
                 updateOrFillLocation(left, dataForCurrLocation, neighborCost);
                 if (!topIsWall) {
