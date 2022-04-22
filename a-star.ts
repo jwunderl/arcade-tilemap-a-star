@@ -4,8 +4,6 @@ namespace scene {
         constructor(
             public loc: SimpleLocation,
             public cost: number,
-            // no need any more
-            // public extraCost: number // cost from heuristic
             public totalCost: number  //cost+heuristic
         ) { }
     }
