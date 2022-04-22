@@ -1,8 +1,8 @@
 //+array+SimpleLocation sim:7.5%, meowbit:10.5% ms comparing with origin
 namespace scene {
     //costs, scaled up by 1000
-    const NEIGHBOR_COST=1000
-    const DIAGONAL_COST=1414
+    const NEIGHBOR_COST = 1000;
+    const DIAGONAL_COST = 1414;
     class PrioritizedLocation {
         constructor(
             public loc: SimpleLocation,
@@ -78,7 +78,6 @@ namespace scene {
             return undefined;
         }
 
-        //changed to array, sim:50%, Meowbit:98.5%
         const consideredTiles: Array<PrioritizedLocation> = []
         const encountedLocations: LocationNode[][] = [[]];
 
@@ -96,7 +95,7 @@ namespace scene {
                     parent,
                     cost
                 );
-            } else if (lData.lastCost > cost) {//!lData.visited && 
+            } else if (lData.lastCost > cost) {
                 lData.lastCost = cost;
                 lData.parent = parent;
             } else {
@@ -115,7 +114,7 @@ namespace scene {
                 return
             }
             let i = consideredTiles.length - 1
-            for (; i >= 0; i--) {  //seek&insert from end, last N are more possible hit
+            for (; i >= 0; i--) {  // seek & insert from end, last N are more possible hit
                 if (newConsideredTile.totalCost < consideredTiles[i].totalCost) {
                     consideredTiles.insertAt(i + 1, newConsideredTile)
                     return;
@@ -173,7 +172,7 @@ namespace scene {
 
             const neighborCost = currLocation.cost + NEIGHBOR_COST;
             const cornerCost = currLocation.cost + DIAGONAL_COST;
-            
+
             if (!leftIsWall) {
                 updateOrFillLocation(left, dataForCurrLocation, neighborCost);
                 if (!topIsWall) {
@@ -225,8 +224,8 @@ namespace scene {
     function tileLocationHeuristic(tile: SimpleLocation, target: SimpleLocation) {
         const xDist = Math.abs(target.col - tile.col)
         const yDist = Math.abs(target.row - tile.row)
-        return Math.max(xDist, yDist) * NEIGHBOR_COST + Math.min(xDist, yDist) * 
-(DIAGONAL_COST - NEIGHBOR_COST)
+        return Math.max(xDist, yDist) * NEIGHBOR_COST + Math.min(xDist, yDist) *
+            (DIAGONAL_COST - NEIGHBOR_COST)
     }
 
     function isWalkable(loc: SimpleLocation, onTilesOf: Image, tm: tiles.TileMap): boolean {
