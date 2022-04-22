@@ -83,9 +83,6 @@ namespace scene {
             const row = l.row;
             const col = l.col;
 
-            // if (tm.isObstacle(col, row)) {
-            //     return;
-            // }
 
             const colData = (encountedLocations[col] || (encountedLocations[col] = []));
             const lData = colData[row];
