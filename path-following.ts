@@ -147,7 +147,7 @@ namespace scene {
         const currentLocation = locationOfSprite(sprite)
         const pathToNearest = generalAStar(tm, currentLocation, null, () => 0, tile => {
             for (let pathTile of path) {
-                if (tile.x === pathTile.x && tile.y === pathTile.y) {
+                if (tile.col === pathTile.col && tile.row === pathTile.row) {
                     return true;
                 }
             }
