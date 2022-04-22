@@ -140,9 +140,6 @@ namespace scene {
             const row = currLocation.loc.row;
             const col = currLocation.loc.col;
 
-            const neighborCost = currLocation.cost + NEIGHBOR_COST;
-            const cornerCost = currLocation.cost + DIAGONAL_COST;
-
 
             const dataForCurrLocation = encountedLocations[col][row];
 
