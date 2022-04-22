@@ -172,6 +172,10 @@ namespace scene {
                 topIsWall = tm.isObstacle(top.col, top.row);
                 bottomIsWall = tm.isObstacle(bottom.col, bottom.row);
             }
+
+            const neighborCost = currLocation.cost + NEIGHBOR_COST;
+            const cornerCost = currLocation.cost + DIAGONAL_COST;
+            
             if (!leftIsWall) {
                 updateOrFillLocation(left, dataForCurrLocation, neighborCost);
                 if (!topIsWall) {
